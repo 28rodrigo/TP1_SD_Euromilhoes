@@ -1,7 +1,3 @@
-/*
-	Simple winsock client
-*/
-
 #include<stdio.h>
 #include<winsock2.h>
 
@@ -106,12 +102,19 @@ int main(int argc, char* argv[])
 
 	server_reply[recv_size - 1] = '\0';
 	puts(server_reply);
-
+	//Menu
+	menuDisplay(&option);
 	while (1)
 	{	
-	
-		//Menu
-		menuDisplay(&option);
+		if (strcmp(message, "quit") == 0)
+		{
+			break;
+		}
+		else if (strcmp(message, "quits") == 0)
+		{
+			break;
+		}
+		
 		//Send some data
 		dataToSend(option, message);
 		
@@ -138,13 +141,11 @@ int main(int argc, char* argv[])
 		//Add a NULL terminating character to make it a proper string before printing
 		server_reply[recv_size - 1] = '\0';
 		puts(server_reply);
-
-
 		if (strcmp(server_reply, "\nBye Client...\n") == 0)
+		{
 			break;
-		
+		}	
 	}
-
 
 	// Close the socket
 	closesocket(s);
