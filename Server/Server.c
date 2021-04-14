@@ -167,7 +167,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 		}
 		else if (strcmp(strRec, "help") == 0) {
 
-			strcpy(strMsg, "\n-> help - Listar tipos de comandos disponiveis;\n-> quit - Sair do programa;\n-> quits - Sair do programa, do lado do servidor;\n-> chave - Retorna uma chave do Euromilhoes;\n-> chaveN - Retorna N chaves, sendo N um numero inteiro;\n-> hist - Historico de chaves ja atribuidas;\n-> delete - Comando exclusivo do servidor para dar “reset” as chaves;\n");
+			strcpy(strMsg, "\n\t-> help - Listar tipos de comandos disponiveis;\n\t-> quit - Sair do programa;\n\t-> quits - Sair do programa, do lado do servidor;\n\t-> chave - Retorna uma chave do Euromilhoes;\n\t-> chaveN - Retorna N chaves, sendo N um numero inteiro;\n\t-> hist - Historico de chaves ja atribuidas;\n\t-> delete - Comando exclusivo do servidor para dar “reset” as chaves;\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
 		else if (strcmp(strRec, "quits") == 0) {
@@ -182,6 +182,11 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 		else if (strcmp(strRec, "bye") == 0) {
 
 			strcpy(strMsg, "\nBye client...\n");
+			send(cs, strMsg, strlen(strMsg) + 1, 0);
+		}
+		else if (strcmp(strRec, " ") == 0) {
+
+			strcpy(strMsg, " ");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
 		else

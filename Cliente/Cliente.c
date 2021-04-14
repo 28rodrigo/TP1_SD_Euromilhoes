@@ -6,36 +6,106 @@
 
 void getIp(char* ip_addr, int* port)
 {
-	puts("Olá bem-vindo ! \n");
-	puts("Indique o endereço IP do Servidor:");
+	puts("Ola bem-vindo ! \n");
+	puts("Indique o endereco IP do Servidor:");
 	scanf("%s", ip_addr);
 	puts("Indique a porta:");
 	scanf("%d", port);
-
 }
 //menu
-void menuDisplay(int*option) {
-	puts("Escolha uma opção do menu :");
-	puts("1 - Obter uma chave do euromilhões.");
-	puts("2 - Obter mais que uma chave do euromilhões.");
-	puts("3 - Obter chaves do Euromilhões já atribuidas.");
-	puts("4 - Ajuda.");
+void menuDisplay() {
+	puts("\t __________________________________________________________");
+	puts("\t|                                                          |");
+	puts("\t|               Escolha uma opcao do menu :                |");
+	puts("\t| -------------------------------------------------------- |");
+	puts("\t| -> 1 - Obter uma chave do euromilhoes.                   |");
+	puts("\t| -> 2 - Obter mais que uma chave do euromilhoes.          |");
+	puts("\t| -> 3 - Obter chaves do Euromilhões ja atribuidas.        |");
+	puts("\t| -> 4 - Ajuda.                                            |");
+	puts("\t| -> 5 - Sair do Programa.                                 |");
+	puts("\t|__________________________________________________________|\n");
+	//Opções de admin
+	puts("\t __________________________________________________________");
+	puts("\t|                                                          |");
+	puts("\t|                      Opcoes de Admin :                   |");
+	puts("\t| -------------------------------------------------------- |");
+	puts("\t| -> 6 - Encerrar a App e o Server                         |");
+	puts("\t| -> 7 - Apagar historico de chaves                        |");
+	puts("\t|__________________________________________________________|\n");
+}
+
+void helpFunc() {
+	puts("\t __________________________________________________________");
+	puts("\t|                                                          |");
+	puts("\t|             Opcoes de comandos disponiveis:              |");
+	puts("\t| -------------------------------------------------------- |");
+	puts("\t| -> 1 - Obter uma chave do euromilhoes.                   |");
+	puts("\t| -> 2 - Obter mais que uma chave do euromilhoes.          |");
+	puts("\t| -> 3 - Obter chaves do Euromilhões já atribuidas.        |");
+	puts("\t| -> 4 - Ajuda.                                            |");
+	puts("\t| -> 5 - Sair do Programa.                                 |");
+	puts("\t| -> 6 - Encerrar a App e o Server                         |");
+	puts("\t| -> 7 - Apagar historico de chaves                        |");
+	puts("\t|__________________________________________________________|\n");
+}
+
+//scan repetitivo
+void menuOption(int*option) {
 	scanf("%d", option);
-	
-	//comandos de resetar servidor secreto!!
 }
 
 // dados a enviar para o server!!
 void dataToSend(int opcao,char* message) {
-	if (opcao == 1)
+	int msg = 0;
+	while (msg != 1)
 	{
-		strcpy(message, "chave");
+		if (opcao == 1)
+		{
+			strcpy(message, "chave");
+			msg = 1;
+		}
+		else if (opcao == 2)
+		{
+			char chave[12]= "chave";
+			char opt[2]="";
+			puts("Quantas chaves quer? (2-99)");
+			scanf("%s", opt);
+			strcat(chave, opt);
+			strcpy(message, chave);
+			msg = 1;
+		}
+		else if (opcao == 3)
+		{
+			strcpy(message, "hist");
+			msg = 1;
+		}
+		else if (opcao == 4)
+		{
+			helpFunc();
+			//strcpy(message, " ");
+			msg = 1;
+		}
+		else if (opcao == 5)
+		{
+			strcpy(message, "quit");
+			msg = 1;
+		}
+		else if (opcao == 6)
+		{
+			strcpy(message, "quits");
+			msg = 1;
+		}
+		else if (opcao == 7)
+		{
+			strcpy(message, "delete");
+			msg = 1;
+		}
+		else {
+			puts("Opção invalida!");
+			menuDisplay();
+			msg = 0;
+		}
 	}
-	else {
-		strcpy(message, "bye");
-	}
-	
-
 }
 
 int main(int argc, char* argv[])
@@ -43,7 +113,7 @@ int main(int argc, char* argv[])
 	WSADATA wsa;
 	SOCKET s;
 	struct sockaddr_in server;
-	char message[1000];
+	char message[1000]=" ";
 	char server_reply[4000];
 	int recv_size;
 	int ws_result;
@@ -53,8 +123,8 @@ int main(int argc, char* argv[])
 
 	getIp(ip_addr,&port);
 
-	puts(ip_addr);
-	printf("%d",port);
+	//puts(ip_addr);
+	//printf("%d",port);
 
 	
 
@@ -91,7 +161,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	puts("Está conectado com o servidor!");
+	puts("Esta conectado com o servidor!");
 	 
 	//quando conectados temos que receber mensagem do servidor antes de enviar...
 	recv_size = recv(s, server_reply, 4000, 0);
@@ -103,7 +173,7 @@ int main(int argc, char* argv[])
 	server_reply[recv_size - 1] = '\0';
 	puts(server_reply);
 	//Menu
-	menuDisplay(&option);
+	menuDisplay();
 	while (1)
 	{	
 		if (strcmp(message, "quit") == 0)
@@ -114,7 +184,7 @@ int main(int argc, char* argv[])
 		{
 			break;
 		}
-		
+		menuOption(&option);
 		//Send some data
 		dataToSend(option, message);
 		
