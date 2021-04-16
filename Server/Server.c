@@ -14,9 +14,97 @@
 
 DWORD WINAPI handleconnection(LPVOID lpParam);
 
+void chavesEuromilhoes() {
+	int numeros[5];
+	int estrelas[2];
+	time_t t;
+	int n = 5;
+	int e = 2;
+	int validation = 0;
+	int buffer = 0;
+	srand((unsigned)time(&t));
+
+	while (validation != 1)
+	{
+		for (int i = 0; i < n; i++) {
+			
+			do
+			{
+				buffer = (rand() % 50)+1;
+			} while (numeros[0]==buffer || numeros[1]==buffer || numeros[2]==buffer || numeros[3]==buffer || numeros[4]==buffer);
+			numeros[i] = buffer;
+			buffer = 0;
+		}
+		for (int j = 0; j < e; j++) {
+
+			do
+			{
+				buffer = (rand() % 12)+1;
+			} while (estrelas[0]==buffer || estrelas[1]==buffer);
+			estrelas[j] = buffer;
+			buffer = 0;
+		}
+		//teste para ver se é igual a uma existente
+		validation = 1;
+	}
+}
+
+void getChavesFromFile(char* result) {
+	char ch;
+	int i = 0;
+	char buffer[10000];
+	FILE* fl;
+	fl = fopen("chavesEuromilhoes.txt", "r+");
+
+	if (fl == NULL) {
+		printf("No file available!");
+		strcpy(result, "Error!");
+	}
+	else
+	{
+		while ((ch = fgetc(fl)) != EOF)
+		{
+			buffer[i] = ch;
+			i++;
+		}
+		buffer[i] = '\0';
+		strcpy(result, buffer);
+		fclose(fl);
+	}
+	return 0;
+}
+
+void saveChavesToFile(int* numeros, int* estrelas) {
+	char ch;
+	int i = 0;
+	char wrt[1000];
+	FILE* fl;
+	fl = fopen("chavesEuromilhoes.txt", "w");
+	//strcpy(wrt, (numeros[0] + ',' + numeros[1] + ',' + numeros[2] + ',' + numeros[3] + ',' + numeros[4] + ';' + estrelas[0] + ',' + estrelas[1] + "\n\0"));
+	strcpy(wrt, "banana");
+	if (fl == NULL)
+	{
+		fprintf(fl, wrt);
+		fclose(fl);
+	}
+	else
+	{
+		fclose(fl);
+		fl = fopen("chavesEuromilhoes.txt", "a+");
+		fprintf(fl, wrt);
+		fclose(fl);
+	}
+
+	return 0;
+}
 
 int main()
 {
+	int stuff1[5];
+	stuff1[0] = 1; stuff1[1] = 2; stuff1[2] = 3; stuff1[3] = 4; stuff1[4] = 5;
+	int stuff2[2];
+	stuff2[0] = 1; stuff2[1] = 2;
+	saveChavesToFile(&stuff1,&stuff2);
 	// Initialise winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
