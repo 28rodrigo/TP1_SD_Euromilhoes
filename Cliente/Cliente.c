@@ -20,7 +20,7 @@ void menuDisplay() {
 	puts("\t| -------------------------------------------------------- |");
 	puts("\t| -> 1 - Obter uma chave do euromilhoes.                   |");
 	puts("\t| -> 2 - Obter mais que uma chave do euromilhoes.          |");
-	puts("\t| -> 3 - Obter chaves do Euromilhões ja atribuidas.        |");
+	puts("\t| -> 3 - Obter chaves do Euromilhoes ja atribuidas.        |");
 	puts("\t| -> 4 - Ajuda.                                            |");
 	puts("\t| -> 5 - Sair do Programa.                                 |");
 	puts("\t|__________________________________________________________|\n");
@@ -50,60 +50,61 @@ void helpFunc() {
 }
 
 //scan repetitivo
-void menuOption(int*option) {
-	scanf("%d", option);
+void menuOption(char*option) {
+	scanf("%c", option);
 }
 
 // dados a enviar para o server!!
-void dataToSend(int opcao,char* message) {
-	int msg = 0;
-	while (msg != 1)
+void dataToSend(char option,char* message) {
+	int opcao = atoi(&option);
+	int teste = 0;
+	for (int i = 1; i < 8; i++)
+	{ 
+		if (opcao == i) 
+		{
+			teste = 1;
+		} 
+	}
+	if (teste == 1)
 	{
 		if (opcao == 1)
 		{
 			strcpy(message, "chave");
-			msg = 1;
 		}
 		else if (opcao == 2)
 		{
-			char chave[12]= "chave";
-			char opt[2]="";
+			char chave[12] = "chave";
+			char opt[2] = "";
 			puts("Quantas chaves quer? (2-99)");
 			scanf("%s", opt);
 			strcat(chave, opt);
 			strcpy(message, chave);
-			msg = 1;
 		}
 		else if (opcao == 3)
 		{
 			strcpy(message, "hist");
-			msg = 1;
+			puts("\nHistorico de chaves por ordem de saída=> 5 Numeros + 2 Estrelas:\n");
 		}
 		else if (opcao == 4)
 		{
 			helpFunc();
 			strcpy(message, " ");
-			msg = 1;
 		}
 		else if (opcao == 5)
 		{
 			strcpy(message, "quit");
-			msg = 1;
 		}
 		else if (opcao == 6)
 		{
 			strcpy(message, "quits");
-			msg = 1;
 		}
 		else if (opcao == 7)
 		{
 			strcpy(message, "delete");
-			msg = 1;
 		}
 		else {
-			puts("Opção invalida!");
+			puts("Opcao invalida!");
 			menuDisplay();
-			msg = 0;
 		}
 	}
 }
@@ -119,7 +120,7 @@ int main(int argc, char* argv[])
 	int ws_result;
 	int port=0;
 	char ip_addr[20];
-	int option;
+	char option;
 
 	getIp(ip_addr,&port);
 
@@ -142,11 +143,11 @@ int main(int argc, char* argv[])
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s == INVALID_SOCKET)
 	{
-		printf("Could not create socket : %d", WSAGetLastError());
+		printf("Não foi possível criar o Socket: %d", WSAGetLastError());
 		return 1;
 	}
 
-	printf("Socket created.\n");
+	//printf("Socket created.\n");
 
 	// create the socket  address (ip address and port)
 	server.sin_addr.s_addr = inet_addr(ip_addr);
@@ -157,11 +158,11 @@ int main(int argc, char* argv[])
 	ws_result = connect(s, (struct sockaddr*)&server, sizeof(server));
 	if (ws_result < 0)
 	{
-		puts("connect error");
+		puts("Erro de Conexão!");
 		return 1;
 	}
 
-	puts("Esta conectado com o servidor!");
+	puts("Conexao com o servidor efetuada com sucesso!");
 	 
 	//quando conectados temos que receber mensagem do servidor antes de enviar...
 	recv_size = recv(s, server_reply, 4000, 0);
@@ -195,7 +196,7 @@ int main(int argc, char* argv[])
 			puts("Send failed");
 			return 1;
 		}
-		puts("Data Sent\n");
+		//puts("Data Sent\n");
 
 		//Receive a reply from the server
 		
@@ -206,7 +207,7 @@ int main(int argc, char* argv[])
 			puts("recv failed");
 		}
 
-		puts("Reply received\n");
+		//puts("Reply received\n");
 
 		//Add a NULL terminating character to make it a proper string before printing
 		server_reply[recv_size - 1] = '\0';

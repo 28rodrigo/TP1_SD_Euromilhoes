@@ -23,7 +23,7 @@ void getChavesFromFile(char* result) {
 
 	if (fl == NULL) {
 		printf("No file available!");
-		strcpy(result, "Error!");
+		strcpy(result, "Sem resultados anteriores para mostrar.");
 	}
 	else
 	{
@@ -68,8 +68,7 @@ void selectionSort(int arr[], int n)
 int KeyTest(int* numeros, int* estrelas)
 {
 	char fich[10000];
-	char fichMatrix[200][25];
-	char teste[25];
+	char teste[40];
 	getChavesFromFile(fich);
 	sprintf(teste, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
 
@@ -109,8 +108,10 @@ void saveChavesToFile(int* numeros, int* estrelas) {
 	return;
 }
 
-void chavesEuromilhoes(int* numeros, int* estrelas) {
+void chavesEuromilhoes(int* num, int* est) {
 	time_t t;
+	int numeros[5];
+	int estrelas[2];
 	int n = 5;
 	int e = 2;
 	int validation = 0;
@@ -146,6 +147,8 @@ void chavesEuromilhoes(int* numeros, int* estrelas) {
 		}
 		else{validation = 0;} //já existe
 	}
+	for (int i = 0; i < 5; i++) { num[i] = numeros[i]; }
+	for (int j = 0; j < 2; j++) { est[j] = estrelas[j]; }
 }
 
 int main()
@@ -309,6 +312,11 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			chavesEuromilhoes(&numeros,&estrelas);
 			sprintf(strMsg, "\nChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
 			//strcpy(strMsg, );
+			send(cs, strMsg, strlen(strMsg) + 1, 0);
+		}
+		else if (strcmp(strRec, "hist") == 0) { //legacy exit
+
+			getChavesFromFile(&strMsg);
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
 		else
