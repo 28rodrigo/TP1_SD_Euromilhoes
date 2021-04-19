@@ -82,7 +82,7 @@ void dataToSend(int opcao,char* message) {
 		else if (opcao == 4)
 		{
 			helpFunc();
-			//strcpy(message, " ");
+			strcpy(message, " ");
 			msg = 1;
 		}
 		else if (opcao == 5)

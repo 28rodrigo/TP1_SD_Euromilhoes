@@ -75,17 +75,41 @@ int KeyTest(int* numeros, int* estrelas)
 
 	if (strstr(fich, teste)==NULL)
 	{
-		printf("ya coisa e tal"); //não encontrou
+		return 1; //não encontrou
 	}
 	else
 	{
-		printf("banana"); //encontrou
+		return 0; //encontrou
 	}
 }
 
-void chavesEuromilhoes() {
-	int numeros[5];
-	int estrelas[2];
+int fileTest()
+{
+	FILE* fl = fopen("chavesEuromilhoes.txt", "r");
+	if (fl == NULL) { return 1; }
+	else { fclose(fl); return 0; }
+}
+
+void saveChavesToFile(int* numeros, int* estrelas) {
+	FILE* fl;
+
+	if (fileTest() == 0)
+	{
+		fl = fopen("chavesEuromilhoes.txt", "a");
+		fprintf(fl, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+		fclose(fl);
+	}
+	else
+	{
+		fl = fopen("chavesEuromilhoes.txt", "w");
+		fprintf(fl, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+		fclose(fl);
+	}
+
+	return;
+}
+
+void chavesEuromilhoes(int* numeros, int* estrelas) {
 	time_t t;
 	int n = 5;
 	int e = 2;
@@ -115,44 +139,17 @@ void chavesEuromilhoes() {
 			buffer = 0;
 		}
 		selectionSort(estrelas, 2);
-		//teste para ver se é igual a uma existente
-		validation = 1;
+		if (KeyTest(&numeros, &estrelas) == 1) //teste para ver se é igual a uma existente
+		{
+			validation = 1; //não existe
+			saveChavesToFile(&numeros, &estrelas);
+		}
+		else{validation = 0;} //já existe
 	}
-}
-
-int fileTest()
-{
-	FILE* fl = fopen("chavesEuromilhoes.txt", "r");
-	if (fl == NULL) { return 1; }
-	else { fclose(fl); return 0; }
-}
-
-void saveChavesToFile(int* numeros, int* estrelas) {
-	FILE* fl;
-	
-	if (fileTest()==0)
-	{
-		fl = fopen("chavesEuromilhoes.txt", "a");
-		fprintf(fl, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-		fclose(fl);
-	}
-	else
-	{
-		fl = fopen("chavesEuromilhoes.txt", "w");
-		fprintf(fl, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-		fclose(fl);
-	}
-	
-	return;
 }
 
 int main()
 {
-	int stuff1[5];
-	stuff1[0] = 1; stuff1[1] = 2; stuff1[2] = 3; stuff1[3] = 4; stuff1[4] = 5;
-	int stuff2[2];
-	stuff2[0] = 1; stuff2[1] = 2;
-	KeyTest(&stuff1,&stuff2);
 	// Initialise winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
@@ -268,22 +265,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 
 		printf("%i : %s\n", i++, strRec);
 
-		if (strcmp(strRec, "date") == 0) {
-			// current date/time based on current system
-			time_t now = time(0);
-			// convert now to string form
-			char* dt = ctime(&now);
-
-			strcpy(strMsg, "\n\nThe local date and time is: ");
-			strcat(strMsg, dt);
-			strcat(strMsg, "\n");
-
-			send(cs, strMsg, strlen(strMsg) + 1, 0);
-
-			// just to echo!
-			// send(cs, strRec, bytesReceived + 1, 0);
-		}
-		else if (strcmp(strRec, "quit") == 0) {
+		if (strcmp(strRec, "quit") == 0) {
 
 			strcpy(strMsg, "\nBye Client...\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
@@ -315,18 +297,23 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			closesocket(cs);
 			exit(0);
 		}
-		else if (strcmp(strRec, "bye") == 0) {
-
-			strcpy(strMsg, "\nBye client...\n");
-			send(cs, strMsg, strlen(strMsg) + 1, 0);
-		}
 		else if (strcmp(strRec, " ") == 0) {
 
 			strcpy(strMsg, " ");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
+		else if (strcmp(strRec, "chave") == 0) {
+
+			int numeros[5];
+			int estrelas[2];
+			chavesEuromilhoes(&numeros,&estrelas);
+			sprintf(strMsg, "\nChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+			//strcpy(strMsg, );
+			send(cs, strMsg, strlen(strMsg) + 1, 0);
+		}
 		else
 		{
+			strcpy(strMsg, "\nComando Inválido\n");
 			send(cs, strRec, bytesReceived + 1, 0);
 		}
 	}
