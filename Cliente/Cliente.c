@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<winsock2.h>
+#include<conio.h>
 
 #pragma comment(lib,"ws2_32.lib") 
 #pragma warning(disable : 4996)
@@ -12,26 +13,44 @@ void getIp(char* ip_addr, int* port)
 	puts("Indique a porta:");
 	scanf("%d", port);
 }
+
+void textcolor(int color)
+{
+	static int __BACKGROUND;
+
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+
+
+	GetConsoleScreenBufferInfo(h, &csbiInfo);
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+		color + (__BACKGROUND << 4));
+}
+
 //menu
 void menuDisplay() {
+	textcolor(14);
 	puts("\t __________________________________________________________");
 	puts("\t|                                                          |");
-	puts("\t|               Escolha uma opcao do menu :                |");
+	cprintf("\t|"); textcolor(9); cprintf("               Escolha uma opcao do menu :                "); textcolor(14); cprintf("|\n");
 	puts("\t| -------------------------------------------------------- |");
-	puts("\t| -> 1 - Obter uma chave do euromilhoes.                   |");
-	puts("\t| -> 2 - Obter mais que uma chave do euromilhoes.          |");
-	puts("\t| -> 3 - Obter chaves do Euromilhoes ja atribuidas.        |");
-	puts("\t| -> 4 - Ajuda.                                            |");
-	puts("\t| -> 5 - Sair do Programa.                                 |");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 1 - Obter uma chave do euromilhoes.                   "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 2 - Obter mais que uma chave do euromilhoes.          "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 3 - Obter chaves do Euromilhoes ja atribuidas.        "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 4 - Ajuda.                                            "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 5 - Sair do Programa.                                 "); textcolor(14); cprintf("|\n");
+	textcolor(14);
 	puts("\t|__________________________________________________________|\n");
 	//Opções de admin
 	puts("\t __________________________________________________________");
 	puts("\t|                                                          |");
-	puts("\t|                      Opcoes de Admin :                   |");
+	cprintf("\t|"); textcolor(9); cprintf("                    Opcoes de Admin :                     "); textcolor(14); cprintf("|\n");
 	puts("\t| -------------------------------------------------------- |");
-	puts("\t| -> 6 - Encerrar a App e o Server                         |");
-	puts("\t| -> 7 - Apagar historico de chaves                        |");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 6 - Encerrar a App e o Server                         "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 7 - Apagar historico de chaves                        "); textcolor(14); cprintf("|\n");
 	puts("\t|__________________________________________________________|\n");
+	textcolor(15);
 }
 
 void helpFunc() {
@@ -73,7 +92,7 @@ void dataToSend(char option,char* message) {
 		}
 		else if (opcao == 2)
 		{
-			char chave[12] = "chave";
+			char chave[12] = "chave_";
 			char opt[2] = "";
 			puts("Quantas chaves quer? (2-99)");
 			scanf("%s", opt);
