@@ -179,13 +179,39 @@ int getQuantity(char str[])
 	
 }
 
+int contarChaves(char* fich) {
+	char chr = "1";
+	int i = 0;
+	int number = 0;
+	while(fich[i]!=NULL)
+	{
+		//Count whenever new line is encountered
+		if (chr == '\n')
+		{
+			number=number+1;	
+		}
+		i++;
+		//take next character from file.
+		chr = fich[i];
+	}
+	return number;
+}
+
+void testar() {
+	char result[10000];
+	int number=0;
+	getChavesFromFile(&result);
+	number = contarChaves(&result);
+	printf("numero de chaves: %d\n", number);
+
+}
 
 int main()
 {
 	// Initialise winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
-
+	testar();
 	printf("\nInitialising Winsock...");
 	int wsResult = WSAStartup(ver, &wsData);
 	if (wsResult != 0) {
