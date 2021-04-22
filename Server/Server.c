@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <time.h>
+
+
 #define TRUE 1
 #define DS_TEST_PORT 4800
 
 #pragma comment (lib, "ws2_32.lib")
 #pragma warning(disable : 4996)
+
+HANDLE ghMutex;
 
 
 // function ot handle the incoming connection
@@ -15,10 +20,15 @@
 DWORD WINAPI handleconnection(LPVOID lpParam);
 
 void getChavesFromFile(char* result) {
+
+	
 	char ch;
 	int i = 0;
 	char buffer[10000];
 	FILE* fl;
+	
+
+	
 	fl = fopen("chavesEuromilhoes.txt", "r+");
 
 	if (fl == NULL) {
@@ -36,7 +46,10 @@ void getChavesFromFile(char* result) {
 		strcpy(result, buffer);
 		fclose(fl);
 	}
-	return;
+		
+
+	
+
 }
 
 void swap(int* xp, int* yp)
@@ -90,7 +103,11 @@ int fileTest()
 }
 
 void saveChavesToFile(int* numeros, int* estrelas) {
+
+	DWORD dwCount = 0, dwWaitResult;
 	FILE* fl;
+
+	
 
 	if (fileTest() == 0)
 	{
@@ -104,8 +121,6 @@ void saveChavesToFile(int* numeros, int* estrelas) {
 		fprintf(fl, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
 		fclose(fl);
 	}
-
-	return;
 }
 
 void chavesEuromilhoes(int* num, int* est) {
@@ -151,6 +166,20 @@ void chavesEuromilhoes(int* num, int* est) {
 	for (int j = 0; j < 2; j++) { est[j] = estrelas[j]; }
 }
 
+int getQuantity(char str[])
+{
+	int init_size = strlen(str);
+	char delim[] = "_";
+	int i = 0;
+	char* ptr = strtok(str, delim);
+
+	ptr = strtok(NULL, delim);
+
+	return atoi(ptr);
+	
+}
+
+
 int main()
 {
 	// Initialise winsock
@@ -195,6 +224,12 @@ int main()
 	HANDLE  hThread;
 	int conresult = 0;
 
+	ghMutex = CreateMutex(
+		NULL,
+		FALSE,
+		NULL);
+	
+
 	while (TRUE)
 	{
 		clientSize = sizeof(client);
@@ -209,7 +244,7 @@ int main()
 		hThread = CreateThread(
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
-			handleconnection,       // thread function name
+			(LPTHREAD_START_ROUTINE)handleconnection,       // thread function name
 			ptclientSocket,          // argument to thread function 
 			0,                      // use default creation flags 
 			&dwThreadId);   // returns the thread identifier 
@@ -225,6 +260,9 @@ int main()
 		}
 	}
 
+	//close Mutex
+	
+	CloseHandle(ghMutex);
 	// Close the socket
 	closesocket(clientSocket);
 
@@ -237,9 +275,10 @@ int main()
 
 
 
+
 DWORD WINAPI handleconnection(LPVOID lpParam)
 {
-
+	DWORD dwCount = 0, dwWaitResult;
 	char strMsg[1024];
 	char strRec[1024];
 
@@ -250,7 +289,9 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 	ptCs = (SOCKET*)lpParam;
 	cs = *ptCs;
 
-	strcpy(strMsg, "\nHello! welcome to the server...\n");
+	
+
+	strcpy(strMsg, "\n100 OK\n");
 	printf("\n%s\n", strMsg);
 	send(cs, strMsg, strlen(strMsg) + 1, 0);
 
@@ -270,7 +311,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 
 		if (strcmp(strRec, "quit") == 0) {
 
-			strcpy(strMsg, "\nBye Client...\n");
+			strcpy(strMsg, "\n400 BYE\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 
 			// Close the socket
@@ -279,7 +320,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 		}
 		else if (strcmp(strRec, "bye") == 0) { //legacy exit
 
-			strcpy(strMsg, "\nBye Client...\n");
+			strcpy(strMsg, "\n400 BYE\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 
 			// Close the socket
@@ -305,14 +346,90 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			strcpy(strMsg, " ");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
-		else if (strcmp(strRec, "chave") == 0) {
-
+		else if (strcmp(strRec, "chave") == 0) { //pedir uma chave - um thread de cada vez 
 			int numeros[5];
 			int estrelas[2];
-			chavesEuromilhoes(&numeros,&estrelas);
-			sprintf(strMsg, "\nChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-			//strcpy(strMsg, );
-			send(cs, strMsg, strlen(strMsg) + 1, 0);
+			dwWaitResult = WaitForSingleObject( // pedir mutex 
+				ghMutex,    
+				INFINITE
+			);
+			
+			switch (dwWaitResult)
+			{
+				case WAIT_OBJECT_0:
+					__try {
+		
+						chavesEuromilhoes(&numeros, &estrelas);
+						sprintf(strMsg, "\nChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						//strcpy(strMsg, );
+						send(cs, strMsg, strlen(strMsg) + 1, 0);
+					}
+					__finally {
+						// Release ownership of the mutex object
+						if (!ReleaseMutex(ghMutex))
+						{
+							// Handle error.
+						}
+					}
+					break;
+
+				case WAIT_ABANDONED:
+					printf("Erro mutex");
+					return FALSE;
+					break;
+
+			}
+
+			
+			
+		}
+		else if (!(strstr(strRec,"chave_") == NULL))
+		{
+			int numeros[5];
+			int estrelas[2];
+			char strRes[1024];
+			dwWaitResult = WaitForSingleObject( // pedir mutex 
+				ghMutex,
+				INFINITE
+			);
+
+			int quantidade=getQuantity(strRec);
+
+			
+			switch (dwWaitResult)
+			{
+			case WAIT_OBJECT_0:
+				__try {
+
+					for (int i = 1; i <= quantidade; i++)
+					{
+						chavesEuromilhoes(&numeros, &estrelas);
+						sprintf(strMsg, "\nChave %d => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.",i,numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						if(i!=1)
+						strcat(strRes, strMsg);
+						else
+						strcpy(strRes, strMsg);
+					}	
+					
+					//strcpy(strMsg, );
+					send(cs, strRes, strlen(strRes) + 1, 0);
+				}
+				__finally {
+					// Release ownership of the mutex object
+					if (!ReleaseMutex(ghMutex))
+					{
+						// Handle error.
+					}
+				}
+				break;
+
+			case WAIT_ABANDONED:
+				printf("Erro mutex");
+				return FALSE;
+				break;
+
+			}
+
 		}
 		else if (strcmp(strRec, "hist") == 0) { //legacy exit
 
@@ -325,4 +442,5 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			send(cs, strRec, bytesReceived + 1, 0);
 		}
 	}
+	return TRUE;
 }
