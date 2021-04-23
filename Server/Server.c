@@ -20,14 +20,11 @@ HANDLE ghMutex;
 DWORD WINAPI handleconnection(LPVOID lpParam);
 
 void getChavesFromFile(char* result) {
-
 	
 	char ch;
 	int i = 0;
 	char buffer[10000];
 	FILE* fl;
-	
-
 	
 	fl = fopen("chavesEuromilhoes.txt", "r+");
 
@@ -46,10 +43,6 @@ void getChavesFromFile(char* result) {
 		strcpy(result, buffer);
 		fclose(fl);
 	}
-		
-
-	
-
 }
 
 void swap(int* xp, int* yp)
@@ -106,8 +99,6 @@ void saveChavesToFile(int* numeros, int* estrelas) {
 
 	DWORD dwCount = 0, dwWaitResult;
 	FILE* fl;
-
-	
 
 	if (fileTest() == 0)
 	{
@@ -176,7 +167,6 @@ int getQuantity(char str[])
 	ptr = strtok(NULL, delim);
 
 	return atoi(ptr);
-	
 }
 
 int contarChaves(char* fich) {
@@ -197,21 +187,11 @@ int contarChaves(char* fich) {
 	return number;
 }
 
-void testar() {
-	char result[10000];
-	int number=0;
-	getChavesFromFile(&result);
-	number = contarChaves(&result);
-	printf("numero de chaves: %d\n", number);
-
-}
-
 int main()
 {
 	// Initialise winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
-	testar();
 	printf("\nInitialising Winsock...");
 	int wsResult = WSAStartup(ver, &wsData);
 	if (wsResult != 0) {
@@ -353,14 +333,14 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			closesocket(cs);
 			return 0;
 		}
-		else if (strcmp(strRec, "help") == 0) {
+		else if (strcmp(strRec, "help") == 0) { //Legacy
 
 			strcpy(strMsg, "\n\t-> help - Listar tipos de comandos disponiveis;\n\t-> quit - Sair do programa;\n\t-> quits - Sair do programa, do lado do servidor;\n\t-> chave - Retorna uma chave do Euromilhoes;\n\t-> chaveN - Retorna N chaves, sendo N um numero inteiro;\n\t-> hist - Historico de chaves ja atribuidas;\n\t-> delete - Comando exclusivo do servidor para dar “reset” as chaves;\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
 		else if (strcmp(strRec, "quits") == 0) {
 
-			strcpy(strMsg, "\nBye client...\n");
+			strcpy(strMsg, "\n400 BYE\n");
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 
 			// Close the socket
@@ -384,10 +364,15 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			{
 				case WAIT_OBJECT_0:
 					__try {
-		
+						char strRes[1024];
 						chavesEuromilhoes(&numeros, &estrelas);
-						sprintf(strMsg, "\nChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-						//strcpy(strMsg, );
+						sprintf(strRes, "\tChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						char result[10000];
+						int number = 0;
+						getChavesFromFile(&result);
+						number = contarChaves(&result);
+						sprintf(strMsg, "\n\tNumero de chaves ja atribuidas: %d\n", number);
+						strcat(strMsg, strRes);
 						send(cs, strMsg, strlen(strMsg) + 1, 0);
 					}
 					__finally {
@@ -426,18 +411,20 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			{
 			case WAIT_OBJECT_0:
 				__try {
-
+					char result[10000];
+					int number = 0;
+					getChavesFromFile(&result);
+					number = contarChaves(&result);
+					sprintf(strRes,"\nNumero de chaves ja atribuidas: %d\n", number);
 					for (int i = 1; i <= quantidade; i++)
 					{
 						chavesEuromilhoes(&numeros, &estrelas);
-						sprintf(strMsg, "\nChave %d => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.",i,numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-						if(i!=1)
+						sprintf(strMsg, "\n\tChave %d => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.",i,numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						if(i!=0)
 						strcat(strRes, strMsg);
 						else
 						strcpy(strRes, strMsg);
 					}	
-					
-					//strcpy(strMsg, );
 					send(cs, strRes, strlen(strRes) + 1, 0);
 				}
 				__finally {
@@ -457,10 +444,81 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			}
 
 		}
-		else if (strcmp(strRec, "hist") == 0) { //legacy exit
+		else if (strcmp(strRec, "hist") == 0) {
+			dwWaitResult = WaitForSingleObject( // pedir mutex 
+				ghMutex,
+				INFINITE
+			);
 
-			getChavesFromFile(&strMsg);
-			send(cs, strMsg, strlen(strMsg) + 1, 0);
+			switch (dwWaitResult)
+			{
+			case WAIT_OBJECT_0:
+				__try {
+					getChavesFromFile(&strMsg);
+					char strRes[1024];
+					char result[10000];
+					int number = 0;
+					getChavesFromFile(&result);
+					number = contarChaves(&result);
+					sprintf(strRes, "\n\tNumero de chaves ja atribuidas: %d\n", number);
+					strcat(strRes, strMsg);
+					send(cs, strRes, strlen(strRes) + 1, 0);
+				}
+				__finally {
+					// Release ownership of the mutex object
+					if (!ReleaseMutex(ghMutex))
+					{
+						// Handle error.
+					}
+				}
+				break;
+
+			case WAIT_ABANDONED:
+				printf("Erro mutex");
+				return FALSE;
+				break;
+
+			}
+		}
+		else if (strcmp(strRec, "delete") == 0) {
+		dwWaitResult = WaitForSingleObject( // pedir mutex 
+			ghMutex,
+			INFINITE
+		);
+
+		switch (dwWaitResult)
+		{
+		case WAIT_OBJECT_0:
+			__try {
+				char msg[100];
+				if (remove("chavesEuromilhoes.txt") == 0)
+				{
+					strcpy(msg, "Ficheiro apagado com sucesso");
+					puts("Deleted successfully");
+				}
+				else
+				{
+					puts("Unable to delete the file");
+					strcpy(msg, "Ficheiro inacessivel");
+				}
+					
+				send(cs, msg, strlen(msg) + 1, 0);
+			}
+			__finally {
+				// Release ownership of the mutex object
+				if (!ReleaseMutex(ghMutex))
+				{
+					// Handle error.
+				}
+			}
+			break;
+
+		case WAIT_ABANDONED:
+			printf("Erro mutex");
+			return FALSE;
+			break;
+
+		}
 		}
 		else
 		{

@@ -107,7 +107,7 @@ void dataToSend(char* option,char* message) {
 		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
 		textcolor(4);
 		strcpy(message, "hist");
-		puts("\nHistorico de chaves por ordem de saída=> 5 Numeros + 2 Estrelas:\n");
+		puts("\nHistorico de chaves por ordem de saida=> 5 Numeros + 2 Estrelas:\n");
 		textcolor(15);
 	}
 	else if (option == '4')
@@ -206,7 +206,17 @@ int main(int argc, char* argv[])
 	}
 
 	server_reply[recv_size - 1] = '\0';
-	puts(server_reply);
+	if (strcmp(server_reply, "\n100 OK\n") == 0)
+	{
+		textcolor(2);
+		puts("Servidor Operacional, Bem Vindo!");
+	}
+	else
+	{
+		textcolor(14);
+		puts(server_reply);
+	}
+	textcolor(15);
 	//Menu
 	PlaySound(TEXT("StartupSound.wav"), NULL, SND_FILENAME || SND_ASYNC);
 	menuDisplay();
@@ -252,7 +262,19 @@ int main(int argc, char* argv[])
 
 			//Add a NULL terminating character to make it a proper string before printing
 			server_reply[recv_size - 1] = '\0';
-			puts(server_reply);
+			
+			if (strcmp(server_reply, "\n400 BYE\n") == 0)
+			{
+				textcolor(13);
+				puts("Adeus, ate a proxima!");
+			}
+			else
+			{
+				textcolor(14);
+				puts(server_reply);
+			}
+			textcolor(15);
+
 			if (strcmp(server_reply, "\nBye Client...\n") == 0)
 			{
 				break;
