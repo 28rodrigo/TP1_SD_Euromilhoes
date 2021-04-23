@@ -20,7 +20,7 @@ HANDLE ghMutex;
 DWORD WINAPI handleconnection(LPVOID lpParam);
 
 void getChavesFromFile(char* result) {
-	
+	//Função que vai buscar as chaves ao ficheiro "chavesEuromilhoes.txt" e retorna (por memória) um string com o conteúdo deste
 	char ch;
 	int i = 0;
 	char buffer[10000];
@@ -45,6 +45,7 @@ void getChavesFromFile(char* result) {
 	}
 }
 
+//Função de assistencia do Selection Sort, que troca os números de posição
 void swap(int* xp, int* yp)
 {
 	int temp = *xp;
@@ -52,7 +53,7 @@ void swap(int* xp, int* yp)
 	*yp = temp;
 }
 
-// Function to perform Selection Sort
+//Função de Selection Sort para ajudar na procura de chaves repetidas
 void selectionSort(int arr[], int n)
 {
 	int i, j, min_idx;
@@ -71,6 +72,7 @@ void selectionSort(int arr[], int n)
 	}
 }
 
+//Função de teste de chaves para verificar se já foram atribuidas
 int KeyTest(int* numeros, int* estrelas)
 {
 	char fich[10000];
@@ -88,6 +90,7 @@ int KeyTest(int* numeros, int* estrelas)
 	}
 }
 
+//Testa se existe ou não o ficheiro "chavesEuromilhoes.txt"
 int fileTest()
 {
 	FILE* fl = fopen("chavesEuromilhoes.txt", "r");
@@ -95,6 +98,7 @@ int fileTest()
 	else { fclose(fl); return 0; }
 }
 
+//Função que guarda as chaves atribuidas no ficheiro "chavesEuromilhoes.txt"
 void saveChavesToFile(int* numeros, int* estrelas) {
 
 	DWORD dwCount = 0, dwWaitResult;
@@ -114,6 +118,7 @@ void saveChavesToFile(int* numeros, int* estrelas) {
 	}
 }
 
+//Função que gera as chaves do Euromilhões
 void chavesEuromilhoes(int* num, int* est) {
 	time_t t;
 	int numeros[5];
@@ -157,6 +162,7 @@ void chavesEuromilhoes(int* num, int* est) {
 	for (int j = 0; j < 2; j++) { est[j] = estrelas[j]; }
 }
 
+//Função que determina o número de chaves a atribuir, quando é feito um pedido de atribuição de 2 ou mais chaves
 int getQuantity(char str[])
 {
 	int init_size = strlen(str);
@@ -169,6 +175,7 @@ int getQuantity(char str[])
 	return atoi(ptr);
 }
 
+//Acede a "chavesEuromilhoes.txt" e conta quantas já foram atribuidas até ao momento
 int contarChaves(char* fich) {
 	char chr = "1";
 	int i = 0;
@@ -279,9 +286,7 @@ int main()
 	WSACleanup();
 }
 
-
-
-
+//Função de comunicação com o cliente
 DWORD WINAPI handleconnection(LPVOID lpParam)
 {
 	DWORD dwCount = 0, dwWaitResult;
@@ -353,6 +358,18 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 		}
 		else if (strcmp(strRec, "chave") == 0) { //pedir uma chave - um thread de cada vez 
+			//current time mechanism
+			char dt[40] = "";
+			time_t rawtime;
+			struct tm* timeinfo;
+			time(&rawtime);
+			timeinfo = localtime(&rawtime);
+			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			char data[150] = "";
+			strcpy(data, "\tChave atribuida na data: \0");
+			strcat(data, dt);
+			strcat(data, "\t");
+
 			int numeros[5];
 			int estrelas[2];
 			dwWaitResult = WaitForSingleObject( // pedir mutex 
@@ -371,9 +388,10 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 						int number = 0;
 						getChavesFromFile(&result);
 						number = contarChaves(&result);
-						sprintf(strMsg, "\n\tNumero de chaves ja atribuidas: %d\n", number);
+						sprintf(strMsg, "\tNumero de chaves ja atribuidas: %d\n", number);
 						strcat(strMsg, strRes);
-						send(cs, strMsg, strlen(strMsg) + 1, 0);
+						strcat(data, strMsg);
+						send(cs, data, strlen(data) + 1, 0);
 					}
 					__finally {
 						// Release ownership of the mutex object
@@ -399,6 +417,19 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			int numeros[5];
 			int estrelas[2];
 			char strRes[1024];
+
+			//current time mechanism
+			char dt[40] = "";
+			time_t rawtime;
+			struct tm* timeinfo;
+			time(&rawtime);
+			timeinfo = localtime(&rawtime);
+			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			char data[150] = "";
+			strcpy(data, "\tChave atribuida na data: \0");
+			strcat(data, dt);
+			strcat(data, "\t");
+
 			dwWaitResult = WaitForSingleObject( // pedir mutex 
 				ghMutex,
 				INFINITE
@@ -415,7 +446,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 					int number = 0;
 					getChavesFromFile(&result);
 					number = contarChaves(&result);
-					sprintf(strRes,"\nNumero de chaves ja atribuidas: %d\n", number);
+					sprintf(strRes,"\tNumero de chaves ja atribuidas: %d\n", number);
 					for (int i = 1; i <= quantidade; i++)
 					{
 						chavesEuromilhoes(&numeros, &estrelas);
@@ -424,8 +455,9 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 						strcat(strRes, strMsg);
 						else
 						strcpy(strRes, strMsg);
-					}	
-					send(cs, strRes, strlen(strRes) + 1, 0);
+					}
+					strcat(data, strRes);
+					send(cs, data, strlen(data) + 1, 0);
 				}
 				__finally {
 					// Release ownership of the mutex object

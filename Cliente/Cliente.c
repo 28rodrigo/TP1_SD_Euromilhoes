@@ -8,6 +8,7 @@
 #pragma comment(lib,"ws2_32.lib") 
 #pragma warning(disable : 4996)
 
+//Função que pede ao user o IP e porta para aceder ao servidor
 void getIp(char* ip_addr, int* port)
 {
 	puts("Ola bem-vindo ! \n");
@@ -17,6 +18,7 @@ void getIp(char* ip_addr, int* port)
 	scanf("%d", port);
 }
 
+//Serve apenas para dar cor aos textos
 void textcolor(int color)
 {
 	static int __BACKGROUND;
@@ -31,7 +33,7 @@ void textcolor(int color)
 		color + (__BACKGROUND << 4));
 }
 
-//menu
+//Apresenta as opções do Menu
 void menuDisplay() {
 	Sleep(1000);
 	textcolor(14);
@@ -57,6 +59,7 @@ void menuDisplay() {
 	textcolor(15);
 }
 
+//Apresenta o conteúdo da função ajuda
 void helpFunc() {
 	textcolor(1);
 	puts("\t __________________________________________________________");
@@ -74,7 +77,7 @@ void helpFunc() {
 	textcolor(15);
 }
 
-// dados a enviar para o server!!
+//Função de dados a enviar para o server!!
 void dataToSend(char* option,char* message) {
 	if (option == '1')
 	{
