@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="Cliente.c" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Click.wav" />
+    <Media Include="Error.wav" />
+    <Media Include="StartupSound.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

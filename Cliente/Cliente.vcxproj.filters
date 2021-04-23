@@ -19,4 +19,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Click.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="StartupSound.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Error.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

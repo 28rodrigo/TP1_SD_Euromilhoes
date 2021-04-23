@@ -1,6 +1,9 @@
-#include<stdio.h>
-#include<winsock2.h>
-#include<conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <conio.h> //for text color
+#include <windows.h>// for audio
+#pragma comment(lib,"winmm.lib") //for audio
 
 #pragma comment(lib,"ws2_32.lib") 
 #pragma warning(disable : 4996)
@@ -30,6 +33,7 @@ void textcolor(int color)
 
 //menu
 void menuDisplay() {
+	Sleep(1000);
 	textcolor(14);
 	puts("\t __________________________________________________________");
 	puts("\t|                                                          |");
@@ -47,84 +51,92 @@ void menuDisplay() {
 	puts("\t|                                                          |");
 	cprintf("\t|"); textcolor(9); cprintf("                    Opcoes de Admin :                     "); textcolor(14); cprintf("|\n");
 	puts("\t| -------------------------------------------------------- |");
-	cprintf("\t|"); textcolor(13); cprintf(" -> 6 - Encerrar a App e o Server                         "); textcolor(14); cprintf("|\n");
-	cprintf("\t|"); textcolor(13); cprintf(" -> 7 - Apagar historico de chaves                        "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 6 - Encerrar a App e o Server.                        "); textcolor(14); cprintf("|\n");
+	cprintf("\t|"); textcolor(13); cprintf(" -> 7 - Apagar historico de chaves.                       "); textcolor(14); cprintf("|\n");
 	puts("\t|__________________________________________________________|\n");
 	textcolor(15);
 }
 
 void helpFunc() {
+	textcolor(1);
 	puts("\t __________________________________________________________");
 	puts("\t|                                                          |");
 	puts("\t|             Opcoes de comandos disponiveis:              |");
 	puts("\t| -------------------------------------------------------- |");
 	puts("\t| -> 1 - Obter uma chave do euromilhoes.                   |");
 	puts("\t| -> 2 - Obter mais que uma chave do euromilhoes.          |");
-	puts("\t| -> 3 - Obter chaves do Euromilhões já atribuidas.        |");
+	puts("\t| -> 3 - Obter chaves do Euromilhoes ja atribuidas.        |");
 	puts("\t| -> 4 - Ajuda.                                            |");
 	puts("\t| -> 5 - Sair do Programa.                                 |");
-	puts("\t| -> 6 - Encerrar a App e o Server                         |");
-	puts("\t| -> 7 - Apagar historico de chaves                        |");
+	puts("\t| -> 6 - Encerrar a App e o Server.                        |");
+	puts("\t| -> 7 - Apagar historico de chaves.                       |");
 	puts("\t|__________________________________________________________|\n");
-}
-
-//scan repetitivo
-void menuOption(char*option) {
-	scanf("%c", option);
+	textcolor(15);
 }
 
 // dados a enviar para o server!!
-void dataToSend(char option,char* message) {
-	int opcao = atoi(&option);
-	int teste = 0;
-	for (int i = 1; i < 8; i++)
-	{ 
-		if (opcao == i) 
-		{
-			teste = 1;
-		} 
-	}
-	if (teste == 1)
+void dataToSend(char* option,char* message) {
+	if (option == '1')
 	{
-		if (opcao == 1)
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		strcpy(message, "chave");
+	}
+	else if (option == '2')
+	{
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		char chave[12] = "chave_";
+		char opt[2] = "";
+		int valido = 0;
+		while (valido!=1)
 		{
-			strcpy(message, "chave");
-		}
-		else if (opcao == 2)
-		{
-			char chave[12] = "chave_";
-			char opt[2] = "";
+			textcolor(2);
 			puts("Quantas chaves quer? (2-99)");
-			scanf("%s", opt);
-			strcat(chave, opt);
-			strcpy(message, chave);
+			scanf("%s", &opt);
+			if ((atoi(opt) < 2) || (atoi(opt) > 99)) { puts("Intervalo Invalido!"); }
+			else
+			{
+				valido = 1; 
+				strcat(chave, opt);
+				strcpy(message, chave);
+			}
 		}
-		else if (opcao == 3)
-		{
-			strcpy(message, "hist");
-			puts("\nHistorico de chaves por ordem de saída=> 5 Numeros + 2 Estrelas:\n");
-		}
-		else if (opcao == 4)
-		{
-			helpFunc();
-			strcpy(message, " ");
-		}
-		else if (opcao == 5)
-		{
-			strcpy(message, "quit");
-		}
-		else if (opcao == 6)
-		{
-			strcpy(message, "quits");
-		}
-		else if (opcao == 7)
-		{
-			strcpy(message, "delete");
-		}
-		else {
-			puts("Opcao invalida!");
-			menuDisplay();
-		}
+		textcolor(15);
+	}
+	else if (option == '3')
+	{
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		textcolor(4);
+		strcpy(message, "hist");
+		puts("\nHistorico de chaves por ordem de saída=> 5 Numeros + 2 Estrelas:\n");
+		textcolor(15);
+	}
+	else if (option == '4')
+	{
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		helpFunc();
+		strcpy(message, " ");
+	}
+	else if (option == '5')
+	{
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		Sleep(1500);
+		strcpy(message, "quit");
+	}
+	else if (option == '6')
+	{
+		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		Sleep(1500);
+		strcpy(message, "quits");
+	}
+	else if (option == '7')
+	{
+		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		strcpy(message, "delete");
+	}
+	else {
+		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		puts("Opcao invalida!");
+		menuDisplay();
 	}
 }
 
@@ -139,7 +151,7 @@ int main(int argc, char* argv[])
 	int ws_result;
 	int port=0;
 	char ip_addr[20];
-	char option;
+	char option='x';
 
 	getIp(ip_addr,&port);
 
@@ -156,13 +168,14 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	printf("Initialised.\n");
+	printf("Inicializado Com Sucesso.\n");
 
 	//Create a socket
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s == INVALID_SOCKET)
 	{
-		printf("Não foi possível criar o Socket: %d", WSAGetLastError());
+		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		printf("Nao foi possível criar o Socket: %d", WSAGetLastError());
 		return 1;
 	}
 
@@ -177,7 +190,8 @@ int main(int argc, char* argv[])
 	ws_result = connect(s, (struct sockaddr*)&server, sizeof(server));
 	if (ws_result < 0)
 	{
-		puts("Erro de Conexão!");
+		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+		puts("Erro de Conexao!");
 		return 1;
 	}
 
@@ -187,15 +201,18 @@ int main(int argc, char* argv[])
 	recv_size = recv(s, server_reply, 4000, 0);
 	if (recv_size == SOCKET_ERROR)
 	{
+		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
 		puts("recv failed");
 	}
 
 	server_reply[recv_size - 1] = '\0';
 	puts(server_reply);
 	//Menu
+	PlaySound(TEXT("StartupSound.wav"), NULL, SND_FILENAME || SND_ASYNC);
 	menuDisplay();
+	
 	while (1)
-	{	
+	{
 		if (strcmp(message, "quit") == 0)
 		{
 			break;
@@ -204,38 +221,45 @@ int main(int argc, char* argv[])
 		{
 			break;
 		}
-		menuOption(&option);
-		//Send some data
-		dataToSend(option, message);
-		
-		ws_result = send(s, message, strlen(message), 0);
-		
-		if (ws_result < 0)
+
+		scanf("%c", &option);
+		if (option != '\n')
 		{
-			puts("Send failed");
-			return 1;
+			dataToSend(option, &message);
+			option = 'x';
+
+			ws_result = send(s, message, strlen(message), 0);
+
+			if (ws_result < 0)
+			{
+				PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+				puts("Send failed");
+				return 1;
+			}
+			//puts("Data Sent\n");
+
+			//Receive a reply from the server
+
+			//verificar se tamanho de envio do servidor corresponde ao tamanho que o cliente recebe!!!
+			recv_size = recv(s, server_reply, 2000, 0);
+			if (recv_size == SOCKET_ERROR)
+			{
+				PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
+				puts("recv failed");
+			}
+
+			//puts("Reply received\n");
+
+			//Add a NULL terminating character to make it a proper string before printing
+			server_reply[recv_size - 1] = '\0';
+			puts(server_reply);
+			if (strcmp(server_reply, "\nBye Client...\n") == 0)
+			{
+				break;
+			}
 		}
-		//puts("Data Sent\n");
-
-		//Receive a reply from the server
-		
-		//verificar se tamanho de envio do servidor corresponde ao tamanho que o cliente recebe!!!
-		recv_size = recv(s, server_reply, 2000, 0);
-		if (recv_size == SOCKET_ERROR)
-		{
-			puts("recv failed");
-		}
-
-		//puts("Reply received\n");
-
-		//Add a NULL terminating character to make it a proper string before printing
-		server_reply[recv_size - 1] = '\0';
-		puts(server_reply);
-		if (strcmp(server_reply, "\nBye Client...\n") == 0)
-		{
-			break;
-		}	
 	}
+	
 
 	// Close the socket
 	closesocket(s);
