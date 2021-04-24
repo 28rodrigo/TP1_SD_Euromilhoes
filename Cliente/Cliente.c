@@ -3,6 +3,9 @@
 #include <winsock2.h>
 #include <conio.h> //for text color
 #include <windows.h>// for audio
+
+#define MAX_SIZE 16100
+
 #pragma comment(lib,"winmm.lib") //for audio
 
 #pragma comment(lib,"ws2_32.lib") 
@@ -88,7 +91,7 @@ void dataToSend(char* option,char* message) {
 	{
 		PlaySound(TEXT("Click.wav"), NULL, SND_FILENAME || SND_ASYNC);
 		char chave[12] = "chave_";
-		char opt[2] = "";
+		char opt[4] = "";
 		int valido = 0;
 		while (valido!=1)
 		{
@@ -143,13 +146,13 @@ void dataToSend(char* option,char* message) {
 	}
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char* argv[MAX_SIZE])
 {
 	WSADATA wsa;
 	SOCKET s;
 	struct sockaddr_in server;
-	char message[1000]=" ";
-	char server_reply[4000];
+	char message[100]=" ";
+	char server_reply[MAX_SIZE];
 	int recv_size;
 	int ws_result;
 	int port=0;
@@ -201,7 +204,7 @@ int main(int argc, char* argv[])
 	puts("Conexao com o servidor efetuada com sucesso!");
 	 
 	//quando conectados temos que receber mensagem do servidor antes de enviar...
-	recv_size = recv(s, server_reply, 4000, 0);
+	recv_size = recv(s, server_reply, MAX_SIZE, 0); //4000->MAX_SIZE
 	if (recv_size == SOCKET_ERROR)
 	{
 		PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);
@@ -254,7 +257,7 @@ int main(int argc, char* argv[])
 			//Receive a reply from the server
 
 			//verificar se tamanho de envio do servidor corresponde ao tamanho que o cliente recebe!!!
-			recv_size = recv(s, server_reply, 2000, 0);
+			recv_size = recv(s, server_reply, MAX_SIZE, 0); //2000 -> MAX_SIZE
 			if (recv_size == SOCKET_ERROR)
 			{
 				PlaySound(TEXT("Error.wav"), NULL, SND_FILENAME || SND_ASYNC);

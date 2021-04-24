@@ -6,7 +6,8 @@
 
 
 #define TRUE 1
-#define DS_TEST_PORT 4800
+#define DS_TEST_PORT 4800 // a porta que usamos é esta
+#define MAX_SIZE 16100
 
 #pragma comment (lib, "ws2_32.lib")
 #pragma warning(disable : 4996)
@@ -23,7 +24,7 @@ void getChavesFromFile(char* result) {
 	//Função que vai buscar as chaves ao ficheiro "chavesEuromilhoes.txt" e retorna (por memória) um string com o conteúdo deste
 	char ch;
 	int i = 0;
-	char buffer[10000];
+	char buffer[MAX_SIZE];
 	FILE* fl;
 	
 	fl = fopen("chavesEuromilhoes.txt", "r+");
@@ -75,7 +76,7 @@ void selectionSort(int arr[], int n)
 //Função de teste de chaves para verificar se já foram atribuidas
 int KeyTest(int* numeros, int* estrelas)
 {
-	char fich[10000];
+	char fich[MAX_SIZE];
 	char teste[40];
 	getChavesFromFile(fich);
 	sprintf(teste, "%d,%d,%d,%d,%d;%d,%d\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
@@ -290,7 +291,7 @@ int main()
 DWORD WINAPI handleconnection(LPVOID lpParam)
 {
 	DWORD dwCount = 0, dwWaitResult;
-	char strMsg[1024];
+	char strMsg[MAX_SIZE];
 	char strRec[1024];
 
 	int i = 1;
@@ -365,7 +366,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
 			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			char data[150] = "";
+			char data[MAX_SIZE] = "";
 			strcpy(data, "\tChave atribuida na data: \0");
 			strcat(data, dt);
 			strcat(data, "\t");
@@ -381,10 +382,10 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			{
 				case WAIT_OBJECT_0:
 					__try {
-						char strRes[1024];
+						char strRes[MAX_SIZE];
 						chavesEuromilhoes(&numeros, &estrelas);
 						sprintf(strRes, "\tChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
-						char result[10000];
+						char result[MAX_SIZE];
 						int number = 0;
 						getChavesFromFile(&result);
 						number = contarChaves(&result);
@@ -416,7 +417,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 		{
 			int numeros[5];
 			int estrelas[2];
-			char strRes[1024];
+			char strRes[MAX_SIZE];
 
 			//current time mechanism
 			char dt[40] = "";
@@ -425,7 +426,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
 			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			char data[150] = "";
+			char data[MAX_SIZE] = "";
 			strcpy(data, "\tChave atribuida na data: \0");
 			strcat(data, dt);
 			strcat(data, "\t");
@@ -442,7 +443,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			{
 			case WAIT_OBJECT_0:
 				__try {
-					char result[10000];
+					char result[MAX_SIZE];
 					int number = 0;
 					getChavesFromFile(&result);
 					number = contarChaves(&result);
@@ -487,8 +488,8 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			case WAIT_OBJECT_0:
 				__try {
 					getChavesFromFile(&strMsg);
-					char strRes[1024];
-					char result[10000];
+					char strRes[MAX_SIZE];
+					char result[MAX_SIZE];
 					int number = 0;
 					getChavesFromFile(&result);
 					number = contarChaves(&result);
