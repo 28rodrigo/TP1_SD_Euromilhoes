@@ -314,10 +314,14 @@ int main(int argc, char* argv[MAX_SIZE])
 	{
 		if (strcmp(message, "quit") == 0)
 		{
+			closesocket(s);
+			WSACleanup();
 			break;
 		}
 		else if (strcmp(message, "quits") == 0)
 		{
+			closesocket(s);
+			WSACleanup();
 			break;
 		}
 
@@ -366,20 +370,16 @@ int main(int argc, char* argv[MAX_SIZE])
 
 			}
 			textcolor(15);
-
-			if (strcmp(server_reply, "\nBye Client...\n") == 0)
-			{
-				break;
-			}
+			Sleep(2000);
 		}
 	}
 	
-
+	
 	// Close the socket
 	closesocket(s);
 
 	//Cleanup winsock
 	WSACleanup();
-
+	
 	return 0;
 }

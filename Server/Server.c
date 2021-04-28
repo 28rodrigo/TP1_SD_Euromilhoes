@@ -172,7 +172,6 @@ int getQuantity(char str[])
 	char* ptr = strtok(str, delim);
 
 	ptr = strtok(NULL, delim);
-
 	return atoi(ptr);
 }
 
@@ -350,7 +349,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			send(cs, strMsg, strlen(strMsg) + 1, 0);
 
 			// Close the socket
-			closesocket(cs);
+			closesocket(cs);;
 			exit(0);
 		}
 		else if (strcmp(strRec, " ") == 0) {
@@ -360,16 +359,12 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 		}
 		else if (strcmp(strRec, "chave") == 0) { //pedir uma chave - um thread de cada vez 
 			//current time mechanism
-			char dt[40] = "";
+			char dt[MAX_SIZE] = "";
 			time_t rawtime;
 			struct tm* timeinfo;
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
 			sprintf(dt, "%d;%d/%d/%d;%d:%d:%d;",1, timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			/*char data[MAX_SIZE] = "";
-			strcpy(data, "\tChave atribuida na data: \0");
-			strcat(data, dt);
-			strcat(data, "\t");*/
 
 			int numeros[5];
 			int estrelas[2];
@@ -385,7 +380,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 						char result[MAX_SIZE];
 						char strRes[MAX_SIZE];
 						int number = 0;
-						char numberchar[10];
+						char numberchar[MAX_SIZE]=" ";
 						getChavesFromFile(&result);
 						number = contarChaves(&result);
 						sprintf(numberchar, "%d;", number);
@@ -411,9 +406,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 					break;
 
 			}
-
-			
-			
 		}
 		else if (!(strstr(strRec,"chave_") == NULL))
 		{
@@ -422,16 +414,12 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			char strRes[MAX_SIZE];
 
 			//current time mechanism
-			char dt[40] = "";
+			char dt[MAX_SIZE] = "";
 			time_t rawtime;
 			struct tm* timeinfo;
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
 			sprintf(dt, "%d;%d/%d/%d;%d:%d:%d;",2, timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			/*char data[MAX_SIZE] = "";
-			strcpy(data, "\tChave atribuida na data: \0");
-			strcat(data, dt);
-			strcat(data, "\t");*/
 
 			dwWaitResult = WaitForSingleObject( // pedir mutex 
 				ghMutex,
@@ -440,7 +428,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 
 			int quantidade=getQuantity(strRec);
 
-			
 			switch (dwWaitResult)
 			{
 			case WAIT_OBJECT_0:
@@ -475,7 +462,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 				printf("Erro mutex");
 				return FALSE;
 				break;
-
 			}
 
 		}
@@ -512,7 +498,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 				printf("Erro mutex");
 				return FALSE;
 				break;
-
 			}
 		}
 		else if (strcmp(strRec, "delete") == 0) {
@@ -552,7 +537,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			printf("Erro mutex");
 			return FALSE;
 			break;
-
 		}
 		}
 		else
