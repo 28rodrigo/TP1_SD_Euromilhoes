@@ -365,11 +365,11 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			struct tm* timeinfo;
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
-			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			char data[MAX_SIZE] = "";
+			sprintf(dt, "%d;%d/%d/%d;%d:%d:%d;",1, timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			/*char data[MAX_SIZE] = "";
 			strcpy(data, "\tChave atribuida na data: \0");
 			strcat(data, dt);
-			strcat(data, "\t");
+			strcat(data, "\t");*/
 
 			int numeros[5];
 			int estrelas[2];
@@ -382,17 +382,19 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			{
 				case WAIT_OBJECT_0:
 					__try {
-						char strRes[MAX_SIZE];
-						chavesEuromilhoes(&numeros, &estrelas);
-						sprintf(strRes, "\tChave => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.\n", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
 						char result[MAX_SIZE];
+						char strRes[MAX_SIZE];
 						int number = 0;
+						char numberchar[10];
 						getChavesFromFile(&result);
 						number = contarChaves(&result);
-						sprintf(strMsg, "\tNumero de chaves ja atribuidas: %d\n", number);
-						strcat(strMsg, strRes);
-						strcat(data, strMsg);
-						send(cs, data, strlen(data) + 1, 0);
+						sprintf(numberchar, "%d;", number);
+						
+						chavesEuromilhoes(&numeros, &estrelas);
+						sprintf(strRes,"%d,%d,%d,%d,%d;%d,%d.", numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						strcat(numberchar, strRes);
+						strcat(dt, numberchar);
+						send(cs, dt, strlen(dt) + 1, 0);
 					}
 					__finally {
 						// Release ownership of the mutex object
@@ -425,11 +427,11 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 			struct tm* timeinfo;
 			time(&rawtime);
 			timeinfo = localtime(&rawtime);
-			sprintf(dt, "Data: %d/%d/%d Hora: %d:%d:%d\n\0", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			char data[MAX_SIZE] = "";
+			sprintf(dt, "%d;%d/%d/%d;%d:%d:%d;",2, timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			/*char data[MAX_SIZE] = "";
 			strcpy(data, "\tChave atribuida na data: \0");
 			strcat(data, dt);
-			strcat(data, "\t");
+			strcat(data, "\t");*/
 
 			dwWaitResult = WaitForSingleObject( // pedir mutex 
 				ghMutex,
@@ -447,18 +449,18 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 					int number = 0;
 					getChavesFromFile(&result);
 					number = contarChaves(&result);
-					sprintf(strRes,"\tNumero de chaves ja atribuidas: %d\n", number);
+					sprintf(strRes,"%d;", number);
 					for (int i = 1; i <= quantidade; i++)
 					{
 						chavesEuromilhoes(&numeros, &estrelas);
-						sprintf(strMsg, "\n\tChave %d => Numeros: %d,%d,%d,%d,%d; Estrelas: %d,%d.",i,numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
+						sprintf(strMsg, "%d,%d,%d,%d,%d;%d,%d;",numeros[0], numeros[1], numeros[2], numeros[3], numeros[4], estrelas[0], estrelas[1]);
 						if(i!=0)
 						strcat(strRes, strMsg);
 						else
 						strcpy(strRes, strMsg);
 					}
-					strcat(data, strRes);
-					send(cs, data, strlen(data) + 1, 0);
+					strcat(dt, strRes);
+					send(cs, dt, strlen(dt) + 1, 0);
 				}
 				__finally {
 					// Release ownership of the mutex object
@@ -493,7 +495,7 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 					int number = 0;
 					getChavesFromFile(&result);
 					number = contarChaves(&result);
-					sprintf(strRes, "\n\tNumero de chaves ja atribuidas: %d\n", number);
+					sprintf(strRes, "%d;%d;",3,number);
 					strcat(strRes, strMsg);
 					send(cs, strRes, strlen(strRes) + 1, 0);
 				}
@@ -526,13 +528,13 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 				char msg[100];
 				if (remove("chavesEuromilhoes.txt") == 0)
 				{
-					strcpy(msg, "Ficheiro apagado com sucesso");
+					sprintf(msg, "%d;%d",7,1);
 					puts("Deleted successfully");
 				}
 				else
 				{
 					puts("Unable to delete the file");
-					strcpy(msg, "Ficheiro inacessivel");
+					sprintf(msg, "%d;%d", 7, 0);
 				}
 					
 				send(cs, msg, strlen(msg) + 1, 0);

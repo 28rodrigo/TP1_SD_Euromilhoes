@@ -146,6 +146,89 @@ void dataToSend(char* option,char* message) {
 	}
 }
 
+void printData(char str[],int size)
+{
+
+	char data[20];
+	char hora[20];
+	char chaves_atribuidas[10];
+	char numeros[50];
+	char estrelas[20];
+	char delim[] = ";";
+	int i = 1;
+	//função acedida
+	char* ptr = strtok(str, delim);
+	if (strcmp(ptr, "1") == 0) //1 chave atribuida
+	{
+		ptr = strtok(NULL, delim);
+		strcpy(data, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(hora, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(chaves_atribuidas, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(numeros, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(estrelas, ptr);
+
+		printf("Chave atribuida no dia %s %s \n", data, hora);
+		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+		printf("Chave 1=> Numeros: %s Estrelas: %s\n", numeros, estrelas);
+	}
+	else if (strcmp(ptr, "2")==0) //multiplas chaves
+	{
+		ptr = strtok(NULL, delim);
+		strcpy(data, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(hora, ptr);
+		ptr = strtok(NULL, delim);
+		strcpy(chaves_atribuidas, ptr);
+		ptr = strtok(NULL, delim);
+		printf("Chave atribuida no dia %s %s \n", data, hora);
+		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+		while (ptr != NULL)
+		{
+			strcpy(numeros, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(estrelas, ptr);
+			ptr = strtok(NULL, delim);
+			printf("Chave %d=> Numeros: %s Estrelas: %s\n",i,numeros, estrelas);
+			i++;
+		}
+	}
+	else if (strcmp(ptr, "3")==0)
+	{
+		ptr = strtok(NULL, delim);
+		strcpy(chaves_atribuidas, ptr);
+		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+		ptr = strtok(NULL, delim);
+		while (ptr != NULL)
+		{
+			strcpy(numeros, ptr);
+			ptr = strtok(NULL, "\n");
+			strcpy(estrelas, ptr);
+			ptr = strtok(NULL, delim);
+			printf("Chave %d=> Numeros: %s Estrelas: %s\n", i, numeros, estrelas);
+			i++;
+		}
+	}
+	else if (strcmp(ptr, "7") == 0)
+	{
+		ptr = strtok(NULL, delim);
+		if (strcmp(ptr, "1") == 0)
+		{
+			printf("Histórico de chaves apagado com sucesso!\n");
+		}
+		else {
+			printf("Erro a apagar histórico!\n");
+		}
+	}
+	else {
+		puts(str);
+	}
+		
+}
+
 int main(int argc, char* argv[MAX_SIZE])
 {
 	WSADATA wsa;
@@ -268,6 +351,7 @@ int main(int argc, char* argv[MAX_SIZE])
 
 			//Add a NULL terminating character to make it a proper string before printing
 			server_reply[recv_size - 1] = '\0';
+
 			
 			if (strcmp(server_reply, "\n400 BYE\n") == 0)
 			{
@@ -277,7 +361,9 @@ int main(int argc, char* argv[MAX_SIZE])
 			else
 			{
 				textcolor(14);
-				puts(server_reply);
+				//new print function
+				printData(server_reply,recv_size);
+
 			}
 			textcolor(15);
 
