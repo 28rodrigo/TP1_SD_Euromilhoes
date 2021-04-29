@@ -161,40 +161,54 @@ void printData(char str[],int size)
 	if (strcmp(ptr, "1") == 0) //1 chave atribuida
 	{
 		ptr = strtok(NULL, delim);
-		strcpy(data, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(hora, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(chaves_atribuidas, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(numeros, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(estrelas, ptr);
+		if (strcmp(ptr, "0") == 0)
+		{
+			printf("Erro a obter uma chave, por favor tente mais tarde!");
+		}
+		else {
+			strcpy(data, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(hora, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(chaves_atribuidas, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(numeros, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(estrelas, ptr);
 
-		printf("Chave atribuida no dia %s %s \n", data, hora);
-		printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
-		printf("Chave 1=> Numeros: %s Estrelas: %s\n", numeros, estrelas);
+			printf("Chave atribuida no dia %s %s \n", data, hora);
+			printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
+			printf("Chave 1=> Numeros: %s Estrelas: %s\n", numeros, estrelas);
+		}
+		
 	}
 	else if (strcmp(ptr, "2")==0) //multiplas chaves
 	{
 		ptr = strtok(NULL, delim);
-		strcpy(data, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(hora, ptr);
-		ptr = strtok(NULL, delim);
-		strcpy(chaves_atribuidas, ptr);
-		ptr = strtok(NULL, delim);
-		printf("Chave atribuida no dia %s %s \n", data, hora);
-		printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
-		while (ptr != NULL)
+		if (strcmp(ptr, "0") == 0)
 		{
-			strcpy(numeros, ptr);
-			ptr = strtok(NULL, delim);
-			strcpy(estrelas, ptr);
-			ptr = strtok(NULL, delim);
-			printf("Chave %d=> Numeros: %s Estrelas: %s\n",i,numeros, estrelas);
-			i++;
+			printf("Erro a obter multiplas chaves, por favor tente mais tarde!");
 		}
+		else {
+			strcpy(data, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(hora, ptr);
+			ptr = strtok(NULL, delim);
+			strcpy(chaves_atribuidas, ptr);
+			ptr = strtok(NULL, delim);
+			printf("Chave atribuida no dia %s %s \n", data, hora);
+			printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
+			while (ptr != NULL)
+			{
+				strcpy(numeros, ptr);
+				ptr = strtok(NULL, delim);
+				strcpy(estrelas, ptr);
+				ptr = strtok(NULL, delim);
+				printf("Chave %d=> Numeros: %s Estrelas: %s\n", i, numeros, estrelas);
+				i++;
+			}
+		}
+		
 	}
 	else if (strcmp(ptr, "3")==0)
 	{

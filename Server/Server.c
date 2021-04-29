@@ -372,7 +372,6 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 				ghMutex,    
 				INFINITE
 			);
-			
 			switch (dwWaitResult)
 			{
 				case WAIT_OBJECT_0:
@@ -395,13 +394,16 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 						// Release ownership of the mutex object
 						if (!ReleaseMutex(ghMutex))
 						{
+							printf("Error releasing mutexs");
 							// Handle error.
 						}
 					}
 					break;
 
 				case WAIT_ABANDONED:
-					printf("Erro mutex");
+					printf("Erro Mutexs");
+					char error[10] = "1;0";
+					send(cs, error, strlen(error) + 1, 0);
 					return FALSE;
 					break;
 
@@ -453,13 +455,15 @@ DWORD WINAPI handleconnection(LPVOID lpParam)
 					// Release ownership of the mutex object
 					if (!ReleaseMutex(ghMutex))
 					{
-						// Handle error.
+						printf("Error releasing mutexs");
 					}
 				}
 				break;
 
 			case WAIT_ABANDONED:
 				printf("Erro mutex");
+				char error[10] = "2;0";
+				send(cs, error, strlen(error) + 1, 0);
 				return FALSE;
 				break;
 			}
