@@ -200,17 +200,26 @@ void printData(char str[],int size)
 	{
 		ptr = strtok(NULL, delim);
 		strcpy(chaves_atribuidas, ptr);
-		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
-		ptr = strtok(NULL, delim);
-		while (ptr != NULL)
+		
+		if (strcmp(chaves_atribuidas, "0") == 0)
 		{
-			strcpy(numeros, ptr);
-			ptr = strtok(NULL, "\n");
-			strcpy(estrelas, ptr);
-			ptr = strtok(NULL, delim);
-			printf("Chave %d=> Numeros: %s Estrelas: %s\n", i, numeros, estrelas);
-			i++;
+			printf("Historico sem registo de chaves atribuidas\n");
+			
 		}
+		else {
+			printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+			ptr = strtok(NULL, delim);
+			while (ptr != NULL)
+			{
+				strcpy(numeros, ptr);
+				ptr = strtok(NULL, "\n");
+				strcpy(estrelas, ptr);
+				ptr = strtok(NULL, delim);
+				printf("Chave %d=> Numeros: %s Estrelas: %s\n", i, numeros, estrelas);
+				i++;
+			}
+		}
+	
 	}
 	else if (strcmp(ptr, "7") == 0)
 	{

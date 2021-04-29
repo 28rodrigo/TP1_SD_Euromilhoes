@@ -31,7 +31,7 @@ void getChavesFromFile(char* result) {
 
 	if (fl == NULL) {
 		printf("No file available!");
-		strcpy(result, "Sem resultados anteriores para mostrar.");
+		strcpy(result, "");
 	}
 	else
 	{
