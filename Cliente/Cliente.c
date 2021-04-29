@@ -172,7 +172,7 @@ void printData(char str[],int size)
 		strcpy(estrelas, ptr);
 
 		printf("Chave atribuida no dia %s %s \n", data, hora);
-		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+		printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
 		printf("Chave 1=> Numeros: %s Estrelas: %s\n", numeros, estrelas);
 	}
 	else if (strcmp(ptr, "2")==0) //multiplas chaves
@@ -185,7 +185,7 @@ void printData(char str[],int size)
 		strcpy(chaves_atribuidas, ptr);
 		ptr = strtok(NULL, delim);
 		printf("Chave atribuida no dia %s %s \n", data, hora);
-		printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+		printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
 		while (ptr != NULL)
 		{
 			strcpy(numeros, ptr);
@@ -207,7 +207,7 @@ void printData(char str[],int size)
 			
 		}
 		else {
-			printf("Numero de chaves já atribuidas: %s\n\n", chaves_atribuidas);
+			printf("Numero de chaves ja atribuidas: %s\n\n", chaves_atribuidas);
 			ptr = strtok(NULL, delim);
 			while (ptr != NULL)
 			{
@@ -226,10 +226,10 @@ void printData(char str[],int size)
 		ptr = strtok(NULL, delim);
 		if (strcmp(ptr, "1") == 0)
 		{
-			printf("Histórico de chaves apagado com sucesso!\n");
+			printf("Historico de chaves apagado com sucesso!\n");
 		}
 		else {
-			printf("Erro a apagar histórico!\n");
+			printf("Erro a apagar historico!\n");
 		}
 	}
 	else {
